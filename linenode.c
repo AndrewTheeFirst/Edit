@@ -117,6 +117,7 @@ int drop(LineNode* head, int start, int stop){
     return SUCCESS;
 }
 
+// edit text at given line number
 int edit(LineNode* head, int line_num, char* text){
     for (int index = 0; index < line_num; index++) {
         head = head->next;

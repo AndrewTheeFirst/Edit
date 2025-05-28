@@ -1,3 +1,5 @@
+#pragma once
+
 struct LN{
     char* text;
     struct LN* next;
