@@ -7,12 +7,17 @@
 
 #define BUFFSIZE 32
 
+// returns a char* of text up to \n or end of string
 char* _get_line(const char* string);
+
+// counts # words seperated by spaces
 int _count_words(char* string);
 
-// opens a txt file and extracts it into a char*
-char* txt_to_string(const char* filename){
+char* get_file_text(const char* filename){
     int file_desc = open(filename, O_RDONLY);
+    if (file_desc < 0){
+        return NULL;
+    }
     int file_size = lseek(file_desc, 0, SEEK_END); // puts pointer to the end of file to get offset in bytes from beginning (file size)
     
     lseek(file_desc, 0, SEEK_SET); // will set the pointer to the beginning of the file (lseek should return 0)
@@ -33,6 +38,7 @@ char* txt_to_string(const char* filename){
         text_ptr += bytes_read; // advance pointer
         total_bytes_read += bytes_read;
     }
+    close(file_desc);
     text_head_ptr[total_bytes_read] = '\0';
     return text_head_ptr;
 }
@@ -51,7 +57,22 @@ char* _get_line(const char* string){
     return line;
 }
 
-// loads char* into a listnode (split by \n)
+char* strip_r_newline(char* string){
+    int string_len = strlen(string);
+    char* stripped_string;
+    int stripped_len;
+    for (int index = string_len - 1; index >= 0; index--){
+        if (string[index] != '\n'){
+            stripped_len = index + 1;
+            stripped_string = (char*)malloc(stripped_len + 1); // + 1 for \0
+            memcpy(stripped_string, string, stripped_len);
+            stripped_string[stripped_len] = '\0';
+            return stripped_string;
+        }
+    }
+    return "";
+}
+
 ListNode* string_to_list(char* text){
     char* string;
     int len_string;
@@ -67,7 +88,6 @@ ListNode* string_to_list(char* text){
     return line_list;
 }
 
-// counts # words seperated by spaces
 int _count_words(char* string){
     int num_words = 0;
     while (1){
@@ -90,7 +110,6 @@ int _count_words(char* string){
     return num_words;
 }
 
-// returns a char** of a given string split on spaces
 char** split_string(char* string){
     char** word_list;
     int num_words = _count_words(string);
@@ -123,7 +142,34 @@ char** split_string(char* string){
     return word_list;
 }
 
-// returns a list containing elements of a char**
+char* get_trail(char* string, int num_skips){
+    char* trail;
+    int num_words = _count_words(string);
+
+    if (num_skips >= num_words){
+        return NULL;
+    }
+    while (num_skips > 0){
+        // skip any spaces
+        while (string[0] == ' '){
+            string++;
+        }
+        // skip word
+        while (string[0] != ' '){
+            string++;
+        }
+        num_skips--;
+    }
+    // skip any spaces
+    while (string[0] == ' '){
+        string++;
+    }
+    int len_trail = strlen(string);
+    trail = (char*)malloc(len_trail + 1);
+    strcpy(trail, string);
+    return trail;
+}
+
 ListNode* strings_to_list(char** strings){
     ListNode* list = new_list();
     while (strings[0] != NULL){
@@ -131,4 +177,16 @@ ListNode* strings_to_list(char** strings){
         strings++;
     }
     return list;
+}
+
+int is_digit(char* string){
+    int digit_flag = 1;
+    unsigned char ascii_val;
+    for (int index = 0; index < strlen(string); index++){
+        ascii_val = (int)string[index];
+        if (!((47 < ascii_val && ascii_val < 58) || ascii_val == 45)){ // NOTE: #'s 0-9 are vals 48-57 in ascii. 45 is -
+            digit_flag = 0;
+        }
+    }
+    return digit_flag;
 }

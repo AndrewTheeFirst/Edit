@@ -6,6 +6,7 @@
 #define ERROR 0x1
 #define SUCCESS 0x0
 
+// sentinel-style linked list
 struct LN{
     char* text;
     struct LN* next;
@@ -13,11 +14,15 @@ struct LN{
     struct LN* tail;
 } typedef ListNode;
 
+// initlaizes a new child node
 ListNode* _create_node(ListNode* parent, const char* text);
+
+// frees an individual node
 void _destroy_node(ListNode* node);
+
+// automatically free and allocate for char* in node
 int _change_node_text(ListNode* head, const char* text);
 
-// initlaizes a new child node
 ListNode* _create_node(ListNode* parent, const char* text){
     ListNode* child = (ListNode*)malloc(sizeof(ListNode));
     child->head = parent->head;
@@ -28,7 +33,6 @@ ListNode* _create_node(ListNode* parent, const char* text){
     return child;
 }
 
-// frees an individual node
 void _destroy_node(ListNode* node){
     if (node != node->head && node != node->tail){
         free(node->text);
@@ -36,7 +40,6 @@ void _destroy_node(ListNode* node){
     free(node);
 }
 
-// automatically free and allocate for char* in node
 int _change_node_text(ListNode* node, const char* text){
     if (node->text){
         free(node->text);
