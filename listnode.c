@@ -13,23 +13,23 @@ struct LN{
     struct LN* tail;
 } typedef ListNode;
 
-ListNode* __create_node(ListNode* parent, const char* text);
-void __destroy_node(ListNode* node);
-int __change_node_text(ListNode* head, const char* text);
+ListNode* _create_node(ListNode* parent, const char* text);
+void _destroy_node(ListNode* node);
+int _change_node_text(ListNode* head, const char* text);
 
 // initlaizes a new child node
-ListNode* __create_node(ListNode* parent, const char* text){
+ListNode* _create_node(ListNode* parent, const char* text){
     ListNode* child = (ListNode*)malloc(sizeof(ListNode));
     child->head = parent->head;
     child->tail = parent->tail;
     child->next = parent->tail;
     child->text = NULL;
-    __change_node_text(child, text);
+    _change_node_text(child, text);
     return child;
 }
 
 // frees an individual node
-void __destroy_node(ListNode* node){
+void _destroy_node(ListNode* node){
     if (node != node->head && node != node->tail){
         free(node->text);
     }
@@ -37,7 +37,7 @@ void __destroy_node(ListNode* node){
 }
 
 // automatically free and allocate for char* in node
-int __change_node_text(ListNode* node, const char* text){
+int _change_node_text(ListNode* node, const char* text){
     if (node->text){
         free(node->text);
         node->text = NULL;
@@ -68,7 +68,7 @@ void destroy_list(ListNode* head){
         return;
     }
     destroy_list(head->next);
-    __destroy_node(head);
+    _destroy_node(head);
 }
 
 int push(ListNode* head, const char* text){
@@ -79,7 +79,7 @@ int push(ListNode* head, const char* text){
     while (head->next != head->tail){
         head = head->next;
     }
-    ListNode* new_node = __create_node(head, text);
+    ListNode* new_node = _create_node(head, text);
     head->next = new_node;
     return SUCCESS;
 }
@@ -95,7 +95,7 @@ int pop(ListNode* head){
     while (head->next->next != head->tail){
         head = head->next;
     }
-    __destroy_node(head->next);
+    _destroy_node(head->next);
     head->next = head->tail;
     if (head->next == head->tail){
         return SUCCESS;
@@ -118,7 +118,7 @@ int add(ListNode* head, int line_index, char* text){
     }
 
     // create new node to insert
-    ListNode* new_node = __create_node(head, text);
+    ListNode* new_node = _create_node(head, text);
     ListNode* following_node = head->next;
 
     // update pointers
@@ -146,7 +146,7 @@ int drop(ListNode* head, int start, int stop){
     // delete nodes up to stop node
     for (int index = start; index < stop; index++){
         temp = current_node->next;
-        __destroy_node(current_node);
+        _destroy_node(current_node);
         current_node = temp;
     }
     head->next = current_node;
@@ -167,8 +167,25 @@ int edit(ListNode* head, int line_index, char* text){
         head = head->next;
         line_index--;
     }
-    __change_node_text(head, text);
+    _change_node_text(head, text);
     return SUCCESS;
+}
+
+char* get_line(ListNode* head, int line_index){
+    if (head == NULL || 
+        head != head->head){
+        return NULL;
+    }
+    int num_lines = length(head);
+    if (line_index > num_lines || line_index < 0){ // out of bounds check
+        return NULL;
+    }
+    head = head->next;
+    while (line_index != 0){
+        head = head->next;
+        line_index--;
+    }
+    return head->text;
 }
 
 int length(ListNode* head){

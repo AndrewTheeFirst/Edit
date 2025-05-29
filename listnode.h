@@ -23,6 +23,9 @@ int drop(ListNode* head, int start, int stop);
 // edit text at given line number
 int edit(ListNode* head, int line_index, char* text);
 
+// return string stored at a given line number
+char* get_line(ListNode* head, int line_index);
+
 // return the size of a list
 int length(ListNode* head);
 
