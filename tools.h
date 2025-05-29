@@ -20,3 +20,6 @@ int is_digit(char* string);
 
 // return a char* of trailing string after given # of words to skip
 char* get_trail(char* string, int num_skips);
+
+// removes any content stored in file, and replaces it with given content
+void overwrite_file(char* filename, char* content);

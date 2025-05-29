@@ -191,6 +191,27 @@ char* get_line(ListNode* head, int line_index){
     return head->text;
 }
 
+char* get_range(ListNode* head, int start, int stop){
+    int bytes = 0;
+    char* string;
+    char* cursor;
+    char* current_line;
+    int line_len;
+    for (int index = start; index < stop; index++){
+        bytes += strlen(get_line(head, index));
+    }
+    string = (char*)malloc(bytes + 1);
+    cursor = string;
+    for (int index = start; index < stop; index++){
+        current_line = get_line(head, index);
+        line_len = strlen(current_line);
+        memcpy(cursor, current_line, line_len);
+        cursor += line_len;
+    }
+    string[bytes] = '\0';
+    return string;
+}
+
 int length(ListNode* head){
     int size = 0;
     while (head->next != head->tail){
@@ -208,7 +229,12 @@ int print(ListNode* head){
     int line_number = 0;
     while (head->next != head->tail){
         head = head->next;
-        printf("#%d: %s", line_number, head->text);
+        if (head->text[strlen(head->text) - 1] != '\n'){
+            printf("#%d: %s\n", line_number, head->text);
+        }
+        else{
+            printf("#%d: %s", line_number, head->text);
+        }
         line_number++;
     }
     return SUCCESS;

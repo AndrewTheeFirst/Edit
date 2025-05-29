@@ -26,6 +26,9 @@ int edit(ListNode* head, int line_index, char* text);
 // return string stored at a given line number
 char* get_line(ListNode* head, int line_index);
 
+// returns a concatenated string of lines given a range
+char* get_range(ListNode* head, int start, int stop);
+
 // return the size of a list
 int length(ListNode* head);
 

@@ -13,6 +13,8 @@ char* _get_line(const char* string);
 // counts # words seperated by spaces
 int _count_words(char* string);
 
+int list_to_file();
+
 char* get_file_text(const char* filename){
     int file_desc = open(filename, O_RDONLY);
     if (file_desc < 0){
@@ -189,4 +191,9 @@ int is_digit(char* string){
         }
     }
     return digit_flag;
+}
+
+void overwrite_file(char* filename, char* content){
+    int file_desc = open(filename, O_WRONLY | _O_TRUNC);
+    write(file_desc, content, strlen(content));
 }

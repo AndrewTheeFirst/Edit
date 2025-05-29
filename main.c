@@ -4,6 +4,7 @@
 #include <io.h>
 #include "tools.h"
 #include "fcntl.h"
+#include <sys/stat.h>
 
 #define MAX_LINE_LEN 128
 
@@ -23,18 +24,34 @@ int take_command(void){
     ListNode* arg_list = strings_to_list(argv);
     int argc = length(arg_list);
     char* command = strip_r_newline(get_line(arg_list, 0));
+
     if (strcmp(command, "QUIT") == 0){ // ie. QUIT\n
         return 0;
     }
-    else if (strcmp(command, "OPEN") == 0 && argc == 2){ // ie. OPEN insert_filename.txt\n
-        char* filename = strip_r_newline(get_line(arg_list, 1));
+    else if (strcmp(command, "OPEN") == 0 && argc >= 2){ // ie. OPEN insert_filename.txt\n
+        char* filename = strip_r_newline(get_trail(buffer, 1));
         char* file_text = get_file_text(filename);
         if (file_text){ // if file opened properly
             ListNode* text_list = string_to_list(file_text);
             while(manage_list(text_list)){}
+            char* saved_text = get_range(text_list, 0, length(text_list));
+            overwrite_file(filename, saved_text);
         }
         else{
-            printf("Open Command Failed.\n");
+            printf("\"%s\" Could not be opened.\n", filename);
+        }
+    }
+    else if (strcmp(command, "NEW") == 0 && argc >= 2){ // ie. OPEN insert_filename.txt\n
+        char* filename = strip_r_newline(get_trail(buffer, 1));
+        // _S_IREAD and _S_IWRITE give reading and writing permissions. 
+        // Notice: open() args are: filename, openflags, permissionflags
+        int file_desc = open(filename, _O_CREAT, _S_IREAD | _S_IWRITE);
+        if (file_desc > 0){
+            close(file_desc);
+            printf("File: \"%s\" created successfully.\n", filename);
+        }
+        else{
+            printf("File: \"%s\" has failed to be created.\n", filename);
         }
     }
     else{
@@ -110,3 +127,4 @@ int manage_list(ListNode* list){
 
     return 1;
 }
+// OPEN ../../unused/my_text_file.txt
