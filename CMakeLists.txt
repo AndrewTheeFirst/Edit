@@ -22,6 +22,11 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+if (MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+    add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+endif()
+
 file(GLOB SRCS_LIST "*.c" "*.h")
 
 add_executable(${EXECUTABLE} ${SRCS_LIST})
